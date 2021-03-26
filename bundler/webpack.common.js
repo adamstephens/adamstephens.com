@@ -1,28 +1,28 @@
-const CopyWebpackPlugin = require('copy-webpack-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const MiniCSSExtractPlugin = require('mini-css-extract-plugin')
-const path = require('path')
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
+const path = require('path');
 
 module.exports = {
-  entry: path.resolve(__dirname, '../src/script.js'),
+  entry: path.resolve(__dirname, '../src/index.js'),
   output:
   {
     filename: 'bundle.[contenthash].js',
-    path: path.resolve(__dirname, '../dist')
+    path: path.resolve(__dirname, '../dist'),
   },
   devtool: 'source-map',
   plugins:
   [
     new CopyWebpackPlugin({
       patterns: [
-        { from: path.resolve(__dirname, '../static') }
-      ]
+        { from: path.resolve(__dirname, '../static') },
+      ],
     }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, '../src/index.html'),
-      minify: true
+      minify: true,
     }),
-    new MiniCSSExtractPlugin()
+    new MiniCSSExtractPlugin(),
   ],
   module:
   {
@@ -31,7 +31,7 @@ module.exports = {
       // HTML
       {
         test: /\.(html)$/,
-        use: ['html-loader']
+        use: ['html-loader'],
       },
 
       // JS
@@ -40,8 +40,8 @@ module.exports = {
         exclude: /node_modules/,
         use:
         [
-          'babel-loader'
-        ]
+          'babel-loader',
+        ],
       },
 
       // CSS
@@ -50,8 +50,8 @@ module.exports = {
         use:
         [
           MiniCSSExtractPlugin.loader,
-          'css-loader'
-        ]
+          'css-loader',
+        ],
       },
 
       // Images
@@ -63,10 +63,10 @@ module.exports = {
             loader: 'file-loader',
             options:
             {
-              outputPath: 'assets/images/'
-            }
-          }
-        ]
+              outputPath: 'assets/images/',
+            },
+          },
+        ],
       },
 
       // Fonts
@@ -78,10 +78,10 @@ module.exports = {
             loader: 'file-loader',
             options:
             {
-              outputPath: 'assets/fonts/'
-            }
-          }
-        ]
+              outputPath: 'assets/fonts/',
+            },
+          },
+        ],
       },
 
       // Shaders
@@ -89,9 +89,9 @@ module.exports = {
         test: /\.(glsl|vs|fs|vert|frag)$/,
         exclude: /node_modules/,
         use: [
-          'raw-loader'
-        ]
-      }
-    ]
-  }
-}
+          'raw-loader',
+        ],
+      },
+    ],
+  },
+};
