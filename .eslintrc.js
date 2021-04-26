@@ -9,5 +9,7 @@ module.exports = {
   },
   rules: {
     'max-len': ['error', { code: 150 }],
+    'no-param-reassign': ['error', { props: false }],
+    'no-underscore-dangle': 'off',
   },
 };

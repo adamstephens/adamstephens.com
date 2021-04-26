@@ -98,7 +98,7 @@ export default class Loader extends EventEmitter {
      * Load
      */
   load(_resources = []) {
-    for (const _resource of _resources) {
+    _resources.forEach((_resource) => {
       this.toLoad += 1;
       const extensionMatch = _resource.source.match(/\.([a-z]+)$/);
 
@@ -114,7 +114,7 @@ export default class Loader extends EventEmitter {
       } else {
         console.warn(`Cannot found extension of ${_resource}`);
       }
-    }
+    });
   }
 
   /**

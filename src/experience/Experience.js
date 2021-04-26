@@ -5,7 +5,9 @@ import assets from './assets';
 import Camera from './Camera';
 import Renderer from './Renderer';
 import Resources from './Resources';
-import London from './London';
+import Office from './Office';
+import Floor from './Floor';
+import ShadowMaterial from './materials/ShadowMaterial';
 
 // import Terrain from './experience/terrain';
 
@@ -19,11 +21,13 @@ export default class Experience {
     this.setConfig();
     this.setDebug();
     this.setStatsMonitoring();
+    this.setColors();
     this.loadResources();
     this.setLights();
     this.setCamera();
     this.setRenderer();
     this.setTime();
+    this.setFloor();
   }
 
   setConfig() {
@@ -52,14 +56,90 @@ export default class Experience {
     document.body.appendChild(this.stats.dom);
   }
 
+  setColors() {
+    this.colors = {};
+
+    this.colors.floorOuter = {};
+    this.colors.floorOuter.string = '#d0cbff';
+    this.colors.floorOuter.instance = new THREE.Color(this.colors.floorOuter.string);
+
+    this.colors.floorInner = {};
+    this.colors.floorInner.string = '#e7dbf7';
+    this.colors.floorInner.instance = new THREE.Color(this.colors.floorInner.string);
+
+    this.colors.floorShadow = {};
+    this.colors.floorShadow.string = '#8d70d6';
+    this.colors.floorShadow.instance = new THREE.Color(this.colors.floorShadow.string);
+
+    this.colors.floorLight = {};
+    this.colors.floorLight.string = '#FFFFFF';
+    this.colors.floorLight.instance = new THREE.Color(this.colors.floorLight.string);
+
+    this.colors.glow = {};
+    this.colors.glow.string = '#e2c1ff';
+    this.colors.glow.instance = new THREE.Color(this.colors.glow.string);
+
+    this.colors.tint = {};
+    this.colors.tint.string = '#0e0a19';
+    this.colors.tint.instance = new THREE.Color(this.colors.tint.string);
+
+    if (this.debug) {
+      const colorsFolder = this.gui.addFolder('Colors');
+
+      Object.keys(this.colors).forEach((key) => {
+        const color = this.colors[key];
+
+        colorsFolder.addColor(color, 'string')
+          .name(key)
+          .onChange(() => {
+            color.instance.set(color.string);
+          });
+      });
+    }
+  }
+
   setLights() {
     const directionalLight = new THREE.DirectionalLight('#ffffff', 3);
-    directionalLight.castShadow = true;
+    directionalLight.castShadow = false;
     directionalLight.shadow.mapSize.set(1024, 1024);
     directionalLight.shadow.camera.far = 15;
     directionalLight.shadow.normalBias = 0.05;
-    directionalLight.position.set(0.25, 2, -2.25);
+    directionalLight.position.set(-2, 2, 0);
     this.scene.add(directionalLight);
+    // const helper = new THREE.DirectionalLightHelper(directionalLight, 5);
+    // this.scene.add(helper);
+  }
+
+  setFloor() {
+    this.floor = new Floor({
+      experience: this,
+    });
+  }
+
+  setShadow() {
+    this.shadow = {};
+
+    // Geometry
+    this.shadow.geometry = new THREE.PlaneBufferGeometry(20, 20, 1, 1);
+
+    // Material
+    // this.resources.items.floorShadow.encoding = THREE.LinearEncoding
+    this.shadow.material = new ShadowMaterial();
+    this.shadow.material.uniforms.uColor.value = this.colors.floorShadow.instance;
+    this.shadow.material.uniforms.uLightColor.value = this.colors.floorLight.instance;
+    this.shadow.material.uniforms.uMask.value = this.resources.items.officeShadowTexture;
+    this.shadow.material.uniforms.uLightMask.value = this.resources.items.officeLightTexture;
+    this.shadow.material.uniforms.uAlpha.value = 1;
+
+    // Mesh
+    this.shadow.mesh = new THREE.Mesh(this.shadow.geometry, this.shadow.material);
+    this.shadow.mesh.position.y = 0.01;
+    this.shadow.mesh.position.x = 0;
+    this.shadow.mesh.rotation.x = -Math.PI * 0.5;
+    this.shadow.mesh.rotation.z = -Math.PI * 1;
+    this.shadow.mesh.matrixAutoUpdate = false;
+    this.shadow.mesh.updateMatrix();
+    this.scene.add(this.shadow.mesh);
   }
 
   /**
@@ -74,11 +154,12 @@ export default class Experience {
     this.resources.on('groupEnd', (_group) => {
       window.requestAnimationFrame(() => {
         switch (_group.name) {
-          case 'london': {
-            this.london = new London({
+          case 'office': {
+            this.office = new Office({
               experience: this,
               index: _group.data.index,
             });
+            this.setShadow();
             break;
           }
 
@@ -125,8 +206,8 @@ export default class Experience {
         this.stats.begin();
       }
 
-      if (this.london) {
-        this.london.update();
+      if (this.office) {
+        this.office.update();
       }
       this.camera.update();
 

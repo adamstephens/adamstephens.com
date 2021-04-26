@@ -63,31 +63,31 @@ export default class Resources extends EventEmitter {
     // Groups
     const groups = [];
 
-    for (const _group of _groups) {
+    _groups.forEach((element) => {
       groups.push({
-        name: _group.name,
-        regex: _group.regex,
+        name: element.name,
+        regex: element.regex,
         meshesGroups: [],
         instancedMeshes: [],
       });
-    }
+    });
 
     // Result
     const result = {};
 
-    for (const _group of groups) {
+    groups.forEach((_group) => {
       result[_group.name] = _group.instancedMeshes;
-    }
+    });
 
     return result;
   }
 
   destroy() {
-    for (const _itemKey in this.items) {
+    this.items.forEach((_itemKey) => {
       const item = this.items[_itemKey];
       if (item instanceof THREE.Texture) {
         item.dispose();
       }
-    }
+    });
   }
 }
