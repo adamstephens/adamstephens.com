@@ -1,7 +1,9 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import Curtain from './curtain/Curtain';
+import ClockHand from './ClockHand';
 
-export default class London {
+export default class Office {
   constructor(_options) {
     // Options
     this.experience = _options.experience;
@@ -24,7 +26,9 @@ export default class London {
     this.scene.add(this.group);
 
     this.setBaked();
-    this.setFoo();
+    this.setCurtain();
+    this.setClockHand();
+    // this.setFoo();
 
     this.show();
   }
@@ -49,25 +53,113 @@ export default class London {
     this.baked.apply = (_object) => {
       _object.traverse((_child) => {
         if (_child instanceof THREE.Mesh) {
-          _child.material = this.baked.material;
+          console.log(_child.name);
+          if (_child.name.startsWith('plant')
+          || _child.name === 'Curtain_rail'
+          || _child.name === 'Skirting'
+          || _child.name.startsWith('walls')
+          || _child.name === 'Window') {
+            _child.material = this.baked.roomMaterial;
+          } else if (_child.name.startsWith('desk-1')) {
+            _child.material = this.baked.deskMaterial1;
+          } else if (_child.name.startsWith('desk-2')) {
+            _child.material = this.baked.deskMaterial2;
+          } else if (_child.name.startsWith('desk-3')) {
+            _child.material = this.baked.deskMaterial3;
+          } else if (_child.name === 'office_workplace_19_langfjall_chair') {
+            _child.material = this.baked.chairMaterial;
+          } else if (_child.name === 'GEO-vincent_body_3' || _child.name === 'GEO-vincent_body_8' || _child.name === 'GEO-vincent_body_7' || _child.name === 'GEO-vincent_body_6' || _child.name === 'GEO-vincent_body_5' || _child.name === 'GEO-vincent_body_4' || _child.name === 'GEO-vincent_hair' || _child.name.startsWith('GEO-vincent_teeth')) {
+            _child.material = this.baked.manMaterial;
+          } else if (_child.name === 'GEO-vincent_body_1' || _child.name === 'GEO-vincent_body_2' || _child.name === 'GEO-vincent_eyeglasses' || _child.name.startsWith('GEO-vincent_eyeball')) {
+            _child.material = this.baked.manMaterial2;
+          } else {
+            _child.material = this.baked.roomMaterial;
+          }
         }
       });
     };
 
-    // Texture
-    this.baked.texture = this.resources.items.officeTexture;
-    this.baked.texture.flipY = false;
-    this.baked.texture.encoding = THREE.sRGBEncoding;
+    // Room Texture
+    this.baked.roomTexture = this.resources.items.roomTexture;
+    this.baked.roomTexture.flipY = false;
+    this.baked.roomTexture.encoding = THREE.sRGBEncoding;
+
+    // Desk Texture
+    this.baked.deskTexture1 = this.resources.items.deskTexture1;
+    this.baked.deskTexture1.flipY = false;
+    this.baked.deskTexture1.encoding = THREE.sRGBEncoding;
+
+    this.baked.deskTexture2 = this.resources.items.deskTexture2;
+    this.baked.deskTexture2.flipY = false;
+    this.baked.deskTexture2.encoding = THREE.sRGBEncoding;
+
+    this.baked.deskTexture3 = this.resources.items.deskTexture3;
+    this.baked.deskTexture3.flipY = false;
+    this.baked.deskTexture3.encoding = THREE.sRGBEncoding;
+
+    this.baked.chairTexture = this.resources.items.chairTexture;
+    this.baked.chairTexture.flipY = false;
+    this.baked.chairTexture.encoding = THREE.sRGBEncoding;
+
+    // Man texture
+    this.baked.manTexture1 = this.resources.items.manTexture1;
+    this.baked.manTexture1.flipY = false;
+    this.baked.manTexture1.encoding = THREE.sRGBEncoding;
+
+    this.baked.manTexture2 = this.resources.items.manTexture2;
+    this.baked.manTexture2.flipY = false;
+    this.baked.manTexture2.encoding = THREE.sRGBEncoding;
 
     // Model
     this.baked.model = this.resources.items.officeModel.scene;
 
-    // Material
-    this.baked.material = new THREE.MeshBasicMaterial({ map: this.baked.texture });
+    // Room Material
+    this.baked.roomMaterial = new THREE.MeshBasicMaterial({ map: this.baked.roomTexture, side: THREE.DoubleSide });
+
+    // Desk Material
+    this.baked.deskMaterial1 = new THREE.MeshBasicMaterial({ map: this.baked.deskTexture1, side: THREE.DoubleSide });
+    this.baked.deskMaterial2 = new THREE.MeshBasicMaterial({ map: this.baked.deskTexture2, side: THREE.DoubleSide });
+    this.baked.deskMaterial3 = new THREE.MeshBasicMaterial({ map: this.baked.deskTexture3, side: THREE.DoubleSide });
+
+    // Desk Material
+    this.baked.chairMaterial = new THREE.MeshBasicMaterial({ map: this.baked.chairTexture });
+
+    // Man Material
+    this.baked.manMaterial = new THREE.MeshBasicMaterial({ map: this.baked.manTexture1 });
+    this.baked.manMaterial2 = new THREE.MeshBasicMaterial({ map: this.baked.manTexture2 });
 
     // Apply baked texture and add to scene
     this.baked.apply(this.baked.model);
     this.group.add(this.baked.model);
+
+    this.baked.manModel = this.resources.items.manModel.scene;
+    this.baked.apply(this.baked.manModel);
+    this.group.add(this.baked.manModel);
+  }
+
+  setCurtain() {
+    this.curtain = new Curtain({
+      experience: this.experience,
+      position: new THREE.Vector3(2.4, 1.1, -0.8),
+      mass: 0.4,
+      damping: 0.07,
+    });
+    this.group.add(this.curtain.curtainMesh);
+
+    this.curtain2 = new Curtain({
+      experience: this.experience,
+      position: new THREE.Vector3(2.4, 1.1, 0.7),
+      mass: 0.4,
+      damping: 0.04,
+    });
+    this.group.add(this.curtain2.curtainMesh);
+  }
+
+  setClockHand() {
+    this.clockHand = new ClockHand({
+      experience: this.experience,
+    });
+    this.group.add(this.clockHand.secondHand);
   }
 
   setFoo() {
@@ -139,6 +231,17 @@ export default class London {
   update() {
   //   this.river.material.uniforms.uTime.value = this.time.elapsedTime;
   //   this.customUniforms.uTime.value = this.time.elapsedTime;
+    if (this.clockHand) {
+      this.clockHand.update();
+    }
+    if (this.curtain) {
+      this.curtain.update();
+    }
+    this.curtain2.update();
+
+    if (this.resources.items.manModel.mixer) {
+      this.resources.items.manModel.mixer.update(this.time.deltaTime);
+    }
   }
 
   destroy() {

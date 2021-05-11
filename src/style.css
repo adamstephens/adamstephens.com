@@ -17,3 +17,52 @@ body
   left: 0;
   outline: none;
 }
+
+.loading {
+  
+}
+
+.loading:before, .loading:after {
+  content: "";
+  background: #000;
+  box-shadow: 0px 0px 15px 5px rgba(0,0,0,0.63);
+  height: 200vh;
+  position: fixed;
+  outline: none;
+  transition: all 0.5s 1.5s ease-in-out;
+  transform: rotate(-10deg);
+  width: 100vw;
+  z-index: 1;
+}
+
+.loading:before {
+  top: -5vh;
+  left: -50vw;
+}
+
+.loading:after {
+  top: -21vh;
+  right: -50vw;
+}
+
+.loading.complete:before {
+  left: -80vw;
+}
+
+.loading.complete:after {
+  right: -98vw;
+}
+
+h1 {
+  color: #fff;
+  position: relative;
+  font-family: 'Abril Fatface', cursive;
+  font-size: 100px;
+}
+
+h2 {
+  color: #fff;
+  position: relative;
+  font-family: 'Abril Fatface', cursive;
+  font-size: 60px;
+}

@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
@@ -76,6 +77,11 @@ export default class Loader extends EventEmitter {
       extensions: ['glb', 'gltf'],
       action: (_resource) => {
         gltfLoader.load(_resource.source, (_data) => {
+          if (_data.animations.length) {
+            _data.mixer = new THREE.AnimationMixer(_data.scene);
+            const action = _data.mixer.clipAction(_data.animations[0]);
+            action.play();
+          }
           this.fileLoadEnd(_resource, _data);
         });
       },

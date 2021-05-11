@@ -13,8 +13,8 @@ export default class App {
   init() {
     // Canvas
     const canvas = document.querySelector('canvas.webgl');
-    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-    gl.getExtension('OES_standard_derivatives');
+    // const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    // gl.getExtension('OES_standard_derivatives');
 
     this.experience = new Experience({
       canvas,

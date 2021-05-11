@@ -17,6 +17,7 @@ export default class Experience {
     // eslint-disable-next-line no-undef
     this.time = app.time;
     this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color(0xe6faff);
 
     this.setConfig();
     this.setDebug();
@@ -27,7 +28,7 @@ export default class Experience {
     this.setCamera();
     this.setRenderer();
     this.setTime();
-    this.setFloor();
+    // this.setFloor();
   }
 
   setConfig() {
@@ -99,15 +100,22 @@ export default class Experience {
   }
 
   setLights() {
-    const directionalLight = new THREE.DirectionalLight('#ffffff', 3);
-    directionalLight.castShadow = false;
-    directionalLight.shadow.mapSize.set(1024, 1024);
-    directionalLight.shadow.camera.far = 15;
-    directionalLight.shadow.normalBias = 0.05;
-    directionalLight.position.set(-2, 2, 0);
-    this.scene.add(directionalLight);
-    // const helper = new THREE.DirectionalLightHelper(directionalLight, 5);
+    // const directionalLight = new THREE.DirectionalLight('#ffffff', 1);
+    // directionalLight.position.set(10, 10, 0);
+    // this.scene.add(directionalLight);
+    // const helper = new THREE.DirectionalLightHelper(directionalLight, 1);
     // this.scene.add(helper);
+    // const directionalLightCameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
+    // this.scene.add(directionalLightCameraHelper);
+
+    // const light = new THREE.PointLight(0xffffff, 1, 100);
+    // light.position.set(0, 1, 0);
+    // this.scene.add(light);
+    // const pointLightHelper = new THREE.PointLightHelper(light, 0.1);
+    // this.scene.add(pointLightHelper);
+
+    const amblight = new THREE.AmbientLight(0x404040); // soft white light
+    this.scene.add(amblight);
   }
 
   setFloor() {
@@ -124,15 +132,16 @@ export default class Experience {
 
     // Material
     // this.resources.items.floorShadow.encoding = THREE.LinearEncoding
-    this.shadow.material = new ShadowMaterial();
-    this.shadow.material.uniforms.uColor.value = this.colors.floorShadow.instance;
-    this.shadow.material.uniforms.uLightColor.value = this.colors.floorLight.instance;
-    this.shadow.material.uniforms.uMask.value = this.resources.items.officeShadowTexture;
-    this.shadow.material.uniforms.uLightMask.value = this.resources.items.officeLightTexture;
-    this.shadow.material.uniforms.uAlpha.value = 1;
+    this.shadow.material = new THREE.MeshStandardMaterial();
+    // this.shadow.material.uniforms.uColor.value = this.colors.floorShadow.instance;
+    // this.shadow.material.uniforms.uLightColor.value = this.colors.floorLight.instance;
+    // this.shadow.material.uniforms.uMask.value = this.resources.items.officeShadowTexture;
+    // this.shadow.material.uniforms.uLightMask.value = this.resources.items.officeLightTexture;
+    // this.shadow.material.uniforms.uAlpha.value = 1;
 
     // Mesh
     this.shadow.mesh = new THREE.Mesh(this.shadow.geometry, this.shadow.material);
+    this.shadow.mesh.receiveShadow = true;
     this.shadow.mesh.position.y = 0.01;
     this.shadow.mesh.position.x = 0;
     this.shadow.mesh.rotation.x = -Math.PI * 0.5;
@@ -155,11 +164,14 @@ export default class Experience {
       window.requestAnimationFrame(() => {
         switch (_group.name) {
           case 'office': {
+            const overlay = document.querySelector('.loading');
+            overlay.classList.add('complete');
+
             this.office = new Office({
               experience: this,
               index: _group.data.index,
             });
-            this.setShadow();
+            // this.setShadow();
             break;
           }
 
@@ -209,9 +221,11 @@ export default class Experience {
       if (this.office) {
         this.office.update();
       }
+
       this.camera.update();
 
-      this.renderer.render();
+      // this.renderer.render();
+      this.renderer.composer.render();
 
       if (this.stats) {
         this.stats.end();

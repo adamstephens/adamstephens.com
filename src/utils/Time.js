@@ -7,14 +7,20 @@ export default class Time extends EventEmitter {
 
     this.clock = new THREE.Clock();
 
+    this.previousTime = 0;
+
     this.tick = this.tick.bind(this);
     this.tick();
   }
 
-  tick() {
+  tick(now) {
     this.ticker = window.requestAnimationFrame(this.tick);
 
     this.elapsedTime = this.clock.getElapsedTime();
+    this.deltaTime = this.elapsedTime - this.previousTime;
+    this.previousTime = this.elapsedTime;
+
+    this.now = now;
 
     this.trigger('tick');
   }
