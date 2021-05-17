@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { DeviceOrientationControls } from 'three/examples/jsm/controls/DeviceOrientationControls';
 
 export default class Camera {
   constructor(_options) {
@@ -11,7 +12,7 @@ export default class Camera {
     this.width = this.config.width;
     this.height = this.config.height;
 
-    this.targetPosition = new THREE.Vector3(-0.095, 0.841, -0.535);
+    this.targetPosition = new THREE.Vector3(-0.095, 0.841, -0.235);
 
     this.setCamera();
     this.setControls();
@@ -22,7 +23,6 @@ export default class Camera {
     this.camera.position.set(-1.3, 0.835, -1.15);
     this.camera.lookAt(this.targetPosition);
     this.scene.add(this.camera);
-    this.introAnimation();
 
     // Debug Camera
     if (this.debug) {
@@ -70,25 +70,36 @@ export default class Camera {
   }
 
   setControls() {
-    this.controls = new OrbitControls(this.camera, this.canvas);
+    if (window.DeviceOrientationEvent && 'ontouchstart' in window) {
+    // setup real compass thing, with event.alpha
+      this.controls = new DeviceOrientationControls(this.camera);
+    } else {
+      this.controls = new OrbitControls(this.camera, this.canvas);
+    }
     this.controls.enableDamping = true;
+    this.controls.minDistance = 2;
+    this.controls.maxDistance = 3.5;
+    this.controls.minPolarAngle = Math.PI * 0.2;
+    this.controls.maxPolarAngle = Math.PI * 0.5;
+    this.controls.minAzimuthAngle = Math.PI * 0.9;
+    this.controls.maxAzimuthAngle = Math.PI * 1.3;
 
     // Cursor
-    this.cursor = {
-      x: 0,
-      y: 0,
-    };
+    // this.cursor = {
+    //   x: 0,
+    //   y: 0,
+    // };
 
-    window.addEventListener('mousemove', (event) => {
-      this.cursor.x = event.clientX / this.width - 0.9;
-      this.cursor.y = -(event.clientY / this.height - 0.9);
-    });
+    // window.addEventListener('mousemove', (event) => {
+    //   this.cursor.x = event.clientX / this.width - 1;
+    //   this.cursor.y = -(event.clientY / this.height - 1);
+    // });
   }
 
   update() {
     this.controls.update();
-    // this.camera.position.x = this.cursor.x * 2;
-    // this.camera.position.y = this.cursor.y * 2;
+    // this.camera.position.x = Math.min(this.cursor.x * 2, 0.1);
+    // this.camera.position.y = Math.max(this.cursor.y * 2, 0.5);
     this.camera.lookAt(this.targetPosition);
   }
 }

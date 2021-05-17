@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import Curtain from './curtain/Curtain';
 import ClockHand from './ClockHand';
+import MonitorScreen from './MonitorScreen';
 
 export default class Office {
   constructor(_options) {
@@ -28,9 +29,10 @@ export default class Office {
     this.setBaked();
     this.setCurtain();
     this.setClockHand();
-    // this.setFoo();
+    this.setMonitorScreen();
 
     this.show();
+    this.camera.introAnimation();
   }
 
   show() {
@@ -53,9 +55,7 @@ export default class Office {
     this.baked.apply = (_object) => {
       _object.traverse((_child) => {
         if (_child instanceof THREE.Mesh) {
-          console.log(_child.name);
-          if (_child.name.startsWith('plant')
-          || _child.name === 'Curtain_rail'
+          if (_child.name === 'Curtain_rail'
           || _child.name === 'Skirting'
           || _child.name.startsWith('walls')
           || _child.name === 'Window') {
@@ -72,6 +72,8 @@ export default class Office {
             _child.material = this.baked.manMaterial;
           } else if (_child.name === 'GEO-vincent_body_1' || _child.name === 'GEO-vincent_body_2' || _child.name === 'GEO-vincent_eyeglasses' || _child.name.startsWith('GEO-vincent_eyeball')) {
             _child.material = this.baked.manMaterial2;
+          } else if (_child.name.startsWith('book') || _child.name.startsWith('shelf') || _child.name === 'Plant') {
+            _child.material = this.baked.bookMaterial;
           } else {
             _child.material = this.baked.roomMaterial;
           }
@@ -110,11 +112,16 @@ export default class Office {
     this.baked.manTexture2.flipY = false;
     this.baked.manTexture2.encoding = THREE.sRGBEncoding;
 
+    // Book texture
+    this.baked.bookTexture = this.resources.items.bookTexture;
+    this.baked.bookTexture.flipY = false;
+    this.baked.bookTexture.encoding = THREE.sRGBEncoding;
+
     // Model
     this.baked.model = this.resources.items.officeModel.scene;
 
     // Room Material
-    this.baked.roomMaterial = new THREE.MeshBasicMaterial({ map: this.baked.roomTexture, side: THREE.DoubleSide });
+    this.baked.roomMaterial = new THREE.MeshBasicMaterial({ map: this.baked.roomTexture });
 
     // Desk Material
     this.baked.deskMaterial1 = new THREE.MeshBasicMaterial({ map: this.baked.deskTexture1, side: THREE.DoubleSide });
@@ -123,6 +130,9 @@ export default class Office {
 
     // Desk Material
     this.baked.chairMaterial = new THREE.MeshBasicMaterial({ map: this.baked.chairTexture });
+
+    // Book Material
+    this.baked.bookMaterial = new THREE.MeshBasicMaterial({ map: this.baked.bookTexture });
 
     // Man Material
     this.baked.manMaterial = new THREE.MeshBasicMaterial({ map: this.baked.manTexture1 });
@@ -141,16 +151,16 @@ export default class Office {
     this.curtain = new Curtain({
       experience: this.experience,
       position: new THREE.Vector3(2.4, 1.1, -0.8),
-      mass: 0.4,
-      damping: 0.07,
+      mass: 0.5,
+      damping: 0.09,
     });
     this.group.add(this.curtain.curtainMesh);
 
     this.curtain2 = new Curtain({
       experience: this.experience,
       position: new THREE.Vector3(2.4, 1.1, 0.7),
-      mass: 0.4,
-      damping: 0.04,
+      mass: 0.3,
+      damping: 0.03,
     });
     this.group.add(this.curtain2.curtainMesh);
   }
@@ -160,6 +170,13 @@ export default class Office {
       experience: this.experience,
     });
     this.group.add(this.clockHand.secondHand);
+  }
+
+  setMonitorScreen() {
+    this.monitorScreen = new MonitorScreen({
+      experience: this.experience,
+    });
+    this.group.add(this.monitorScreen.screen);
   }
 
   setFoo() {
@@ -237,7 +254,12 @@ export default class Office {
     if (this.curtain) {
       this.curtain.update();
     }
-    this.curtain2.update();
+    if (this.curtain2) {
+      this.curtain2.update();
+    }
+    if (this.monitorScreen) {
+      this.monitorScreen.update();
+    }
 
     if (this.resources.items.manModel.mixer) {
       this.resources.items.manModel.mixer.update(this.time.deltaTime);

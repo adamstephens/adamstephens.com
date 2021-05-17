@@ -28,7 +28,7 @@ export default class Experience {
     this.setCamera();
     this.setRenderer();
     this.setTime();
-    // this.setFloor();
+    this.setFloor();
   }
 
   setConfig() {
@@ -61,11 +61,11 @@ export default class Experience {
     this.colors = {};
 
     this.colors.floorOuter = {};
-    this.colors.floorOuter.string = '#d0cbff';
+    this.colors.floorOuter.string = '#fcb14b';
     this.colors.floorOuter.instance = new THREE.Color(this.colors.floorOuter.string);
 
     this.colors.floorInner = {};
-    this.colors.floorInner.string = '#e7dbf7';
+    this.colors.floorInner.string = '#f5e3bc';
     this.colors.floorInner.instance = new THREE.Color(this.colors.floorInner.string);
 
     this.colors.floorShadow = {};
@@ -100,22 +100,18 @@ export default class Experience {
   }
 
   setLights() {
-    // const directionalLight = new THREE.DirectionalLight('#ffffff', 1);
-    // directionalLight.position.set(10, 10, 0);
-    // this.scene.add(directionalLight);
-    // const helper = new THREE.DirectionalLightHelper(directionalLight, 1);
-    // this.scene.add(helper);
-    // const directionalLightCameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
-    // this.scene.add(directionalLightCameraHelper);
+    const directionalLight = new THREE.DirectionalLight('#ffcc80', 1);
+    directionalLight.position.set(3, 1, 0);
+    this.scene.add(directionalLight);
 
-    // const light = new THREE.PointLight(0xffffff, 1, 100);
-    // light.position.set(0, 1, 0);
-    // this.scene.add(light);
+    const light = new THREE.PointLight(0xffffff, 0.5);
+    light.position.set(1.8, 1, -1.4);
+    this.scene.add(light);
     // const pointLightHelper = new THREE.PointLightHelper(light, 0.1);
     // this.scene.add(pointLightHelper);
 
-    const amblight = new THREE.AmbientLight(0x404040); // soft white light
-    this.scene.add(amblight);
+    // const amblight = new THREE.AmbientLight(0x404040); // soft white light
+    // this.scene.add(amblight);
   }
 
   setFloor() {
@@ -164,7 +160,7 @@ export default class Experience {
       window.requestAnimationFrame(() => {
         switch (_group.name) {
           case 'office': {
-            const overlay = document.querySelector('.loading');
+            const overlay = document.querySelector('body');
             overlay.classList.add('complete');
 
             this.office = new Office({
@@ -224,8 +220,11 @@ export default class Experience {
 
       this.camera.update();
 
-      // this.renderer.render();
-      this.renderer.composer.render();
+      if (this.renderer.composer) {
+        this.renderer.composer.render();
+      } else {
+        this.renderer.render();
+      }
 
       if (this.stats) {
         this.stats.end();

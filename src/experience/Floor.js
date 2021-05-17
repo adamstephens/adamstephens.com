@@ -36,8 +36,7 @@ export default class Floor {
     this.lathe.material.uniforms.uColorOuter.value = this.colors.floorOuter.instance;
 
     this.lathe.mesh = new THREE.Mesh(this.lathe.geometry, this.lathe.material);
-    this.lathe.mesh.receiveShadow = true;
-    this.lathe.mesh.material.needsUpdate = true;
+    this.lathe.mesh.position.y = -0.1;
     this.scene.add(this.lathe.mesh);
   }
 

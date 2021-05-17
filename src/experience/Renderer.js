@@ -55,37 +55,39 @@ export default class Renderer {
     const options = {
       focalLength: 0.0002,
       focusDistance: 0.0002,
-      bokehScale: 8,
+      bokehScale: 5,
       width: this.config.width,
       height: this.config.height,
     };
     const dof = new DepthOfFieldEffect(this.camera.camera, options);
 
-    const geometry = new THREE.BufferGeometry();
-    // create a simple square shape. We duplicate the top left and bottom right
-    // vertices because each vertex needs to appear once per triangle.
-    const vertices = new Float32Array([
-      -0.1, -0.1, 0.1,
-	 0.1, -0.1, 0.1,
-	 0.1, 0.1, 0.1,
-
-	 0.1, 0.1, 0.1,
-      -0.1, 0.1, 0.1,
-      -0.1, -0.1, 0.1,
-    ]);
-
-    // itemSize = 3 because there are 3 values (components) per vertex
-    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    const verticesOfCube = [
+      -1, -1, -1, 1, -1, -1, 1, 1, -1, -1, 1, -1,
+      -1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, 1,
+    ];
+    const indicesOfFaces = [
+      2, 1, 0, 0, 3, 2,
+      0, 4, 7, 7, 3, 0,
+      0, 1, 5, 5, 4, 0,
+      1, 2, 6, 6, 5, 1,
+      2, 3, 7, 7, 6, 2,
+      4, 5, 6, 6, 7, 4,
+    ];
+    const geometry = new THREE.PolyhedronGeometry(verticesOfCube, indicesOfFaces, 0.4, 1);
     const material = new THREE.PointsMaterial({ color: 0xffcc80 });
     const mesh = new THREE.Points(geometry, material);
-    mesh.position.set(6.2, 1.7, 1.5);
+    mesh.position.set(4.2, 1.4, 1);
     this.scene.add(mesh);
-    const godRays = new GodRaysEffect(this.camera.camera, mesh, { density: 1, decay: 0.94, clampMax: 0.95 });
+    const godRays = new GodRaysEffect(this.camera.camera, mesh, { density: 1, decay: 0.93, clampMax: 0.95 });
 
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.scene, this.camera.camera));
     this.composer.addPass(new EffectPass(this.camera.camera, dof));
     this.composer.addPass(new EffectPass(this.camera.camera, godRays));
+
+    this.composer.addPass(new RenderPass(this.scene, this.camera.camera));
+    this.composer.addPass(new EffectPass(this.camera.camera, dof));
+    this.composer.addPass(new EffectPass(this.camera.camera.set, godRays));
 
     if (this.debug) {
       this.experience.gui

@@ -31,8 +31,8 @@ export default class Curtain {
     this.DAMPING = _options.damping;
     this.DRAG = 1 - this.DAMPING;
 
-    // this.GRAVITY = 981 * 1.4;
-    this.GRAVITY = 981 * 0.5;
+    this.GRAVITY = 981 * 1.4;
+    // this.GRAVITY = 981 * 0.5;
     this.gravity = new THREE.Vector3(0, -this.GRAVITY, 0).multiplyScalar(this.mass);
 
     this.TIMESTEP = 18 / 1000;
@@ -124,9 +124,11 @@ export default class Curtain {
   simulate(now) {
     const windStrength = Math.cos(now / 7000) * 20 + 40;
 
-    this.windForce.set(Math.sin(now / 2000), Math.cos(now / 3000), Math.sin(now / 1000));
+    this.windForce.set(-Math.sin(now / 2000), Math.cos(now / 3000), -Math.abs(Math.sin(now / 1000)));
     this.windForce.normalize();
     this.windForce.multiplyScalar(windStrength);
+
+    console.log(this.windForce);
 
     // Aerodynamics forces
 

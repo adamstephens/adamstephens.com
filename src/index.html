@@ -2,13 +2,15 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap" rel="stylesheet">
     <title>AdamStephens.com</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/gsap.min.js"></script>
   </head>
   <body>
+    <div class="slide-panel slide-panel--left"></div>
+    <div class="slide-panel slide-panel--right"></div>
     <div class="loading">
         <div class="loading__bar"></div>
         <div class="loading__bar"></div>
@@ -17,9 +19,21 @@
         <div class="loading__bar"></div>
         <div class="loading__ball"></div>
     </div>
+    <video id="video" loop preload="auto" muted="muted" crossOrigin="anonymous" playsinline style="display:none">
+      <source src="/static/textures/screen.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+    </video>
     <canvas class="webgl"></canvas>
     <!-- <h1>Adam Stephens</h1> -->
     <!-- <h2>Web Developer</h2> -->
+    <div class="logo">hg<span>.</span><span class="role">front<br>end</span></div>
+
+    <div class="stripes">
+      <div class="stripes__bar"></div>
+      <div class="stripes__bar"></div>
+      <div class="stripes__bar"></div>
+      <div class="stripes__bar"></div>
+      <div class="stripes__bar"></div>
+    </div>
     
   </body>
 </html>

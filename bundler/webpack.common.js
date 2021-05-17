@@ -44,19 +44,22 @@ module.exports = {
         ],
       },
 
-      // CSS
+      // SCSS
       {
-        test: /\.css$/,
-        use:
-        [
-          MiniCSSExtractPlugin.loader,
+        test: /\.s[ac]ss$/i,
+        use: [
+          // Creates `style` nodes from JS strings
+          'style-loader',
+          // Translates CSS into CommonJS
           'css-loader',
+          // Compiles Sass to CSS
+          'sass-loader',
         ],
       },
 
       // Images
       {
-        test: /\.(jpg|png|gif|svg)$/,
+        test: /\.(jpg|png|gif|svg|webp)$/,
         use:
         [
           {
